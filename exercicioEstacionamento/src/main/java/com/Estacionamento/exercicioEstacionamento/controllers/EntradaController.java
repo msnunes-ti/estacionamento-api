@@ -1,5 +1,7 @@
 package com.Estacionamento.exercicioEstacionamento.controllers;
 
+import com.Estacionamento.exercicioEstacionamento.dto.AlteraEntradaClienteDTO;
+import com.Estacionamento.exercicioEstacionamento.dto.ResultadoFinanceiroDTO;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,13 +74,13 @@ public class EntradaController {
         EntradaCliente entradaCliente = entradaClientes.get(0);
         entradaCliente.setSaida(LocalDateTime.now());
         int horas = (int) entradaCliente.getEntrada().until(entradaCliente.getSaida(), ChronoUnit.HOURS);
-        entradaCliente.setValor(BigDecimal.valueOf(5 * (horas + 1))); // 5 é o valor da hora do estacionamento
+        entradaCliente.setValor(BigDecimal.valueOf(5L * (horas + 1))); // 5.0 é o valor da hora do estacionamento
         entradaRepository.save(entradaCliente);
         return entradaCliente;
     }
 
     @GetMapping(path = "/financeiro")
-    public String relatorioGeralFinanceiro() {
+    public ResultadoFinanceiroDTO relatorioGeralFinanceiro() {
         int quantidadeDeRegistros = 0;
         BigDecimal valorTotal = BigDecimal.ZERO;
         List<EntradaCliente> todosJaFinalizados = new ArrayList<>();
@@ -90,35 +92,29 @@ public class EntradaController {
             valorTotal = valorTotal.add(e.getValor());
             quantidadeDeRegistros ++;
         }
-        return "Foram encontrados: " + quantidadeDeRegistros + " registros finalizados. Total:  R$ " + valorTotal + ".";
+        ResultadoFinanceiroDTO resultado = new ResultadoFinanceiroDTO();
+        resultado.setRegistros(quantidadeDeRegistros);
+        resultado.setValorTotal(valorTotal);
+        return resultado;
     }
 
     @PutMapping(path = "/{placa}")
-    public EntradaCliente alterarRegistro(@Valid @PathVariable String placa, String novoModelo, String novaPlaca) {
-        List<EntradaCliente> todosEncontrados = entradaRepository.findByPlaca(placa);
-        List<EntradaCliente> estacionados = new ArrayList<>();
-        if (todosEncontrados.size() == 0){
-            throw new RuntimeException("Não foi encontrado nenhum registro de entrada desse veículo.");
-        }
-        for (EntradaCliente e : todosEncontrados) {
-            if (e.getSaida() == null) {
-                estacionados.add(e);
-            }
-        }
-        if (estacionados.size() > 1) {
+    public EntradaCliente alterarRegistro(@Valid @RequestBody AlteraEntradaClienteDTO alteraEntradaClienteDTO, @PathVariable String placa) {
+
+        long estacionados = entradaRepository.countByPlacaIgnoreCaseAndSaidaIsNull(placa);
+        if (estacionados > 1){
             throw new RuntimeException("Foram encontrados mais de um registros abertos com essa placa, favor verificar!");
         }
-        if (estacionados.size() == 0) {
-            if (todosEncontrados.size() != 0) {
-                throw new RuntimeException("Esse veículo possui apenas registros fechados. Não pode ser alterado!");
-            }
-            throw new RuntimeException("Não foram encontrados Veículos estacionados com essa placa.");
+        if (estacionados == 0) {
+            throw new RuntimeException("Não foi encontrado nenhum registro de entrada desse veículo.");
         }
-        EntradaCliente entradaCliente = estacionados.get(0);
-        entradaCliente.setModelo(novoModelo);
-        entradaCliente.setPlaca(novaPlaca);
-        entradaRepository.save(entradaCliente);
-        return entradaCliente;
+        List<EntradaCliente> entradaClientes = entradaRepository.findByPlacaIgnoreCaseAndSaidaIsNull(placa);
+        EntradaCliente cliente = entradaClientes.get(0);
+        cliente.setPlaca(alteraEntradaClienteDTO.getPlaca());
+        cliente.setModelo(alteraEntradaClienteDTO.getModelo());
+        cliente.setEntrada(alteraEntradaClienteDTO.getEntrada());
+        entradaRepository.save(cliente);
+        return cliente;
     }
 
 }

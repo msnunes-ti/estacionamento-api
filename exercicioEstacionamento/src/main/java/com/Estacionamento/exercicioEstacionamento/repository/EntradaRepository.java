@@ -13,6 +13,9 @@ public interface EntradaRepository extends PagingAndSortingRepository<EntradaCli
 
     public List<EntradaCliente> findByPlaca(String placa);
 
+    public long countByPlacaIgnoreCaseAndSaidaIsNull(String placa);
+
+
 
 
 }
