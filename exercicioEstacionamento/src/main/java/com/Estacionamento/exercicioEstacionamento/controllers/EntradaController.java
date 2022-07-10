@@ -77,4 +77,48 @@ public class EntradaController {
         return entradaCliente;
     }
 
+    @GetMapping(path = "/financeiro")
+    public String relatorioGeralFinanceiro() {
+        int quantidadeDeRegistros = 0;
+        BigDecimal valorTotal = BigDecimal.ZERO;
+        List<EntradaCliente> todosJaFinalizados = new ArrayList<>();
+        todosJaFinalizados = (List<EntradaCliente>) obterFinalizados();
+        if (todosJaFinalizados.isEmpty()) {
+            throw new RuntimeException("Não foram encontrados lançamentos finalizados");
+        }
+        for (EntradaCliente e : todosJaFinalizados) {
+            valorTotal = valorTotal.add(e.getValor());
+            quantidadeDeRegistros ++;
+        }
+        return "Foram encontrados: " + quantidadeDeRegistros + " registros finalizados. Total:  R$ " + valorTotal + ".";
+    }
+
+    @PutMapping(path = "/{placa}")
+    public EntradaCliente alterarRegistro(@Valid @PathVariable String placa, String novoModelo, String novaPlaca) {
+        List<EntradaCliente> todosEncontrados = entradaRepository.findByPlaca(placa);
+        List<EntradaCliente> estacionados = new ArrayList<>();
+        if (todosEncontrados.size() == 0){
+            throw new RuntimeException("Não foi encontrado nenhum registro de entrada desse veículo.");
+        }
+        for (EntradaCliente e : todosEncontrados) {
+            if (e.getSaida() == null) {
+                estacionados.add(e);
+            }
+        }
+        if (estacionados.size() > 1) {
+            throw new RuntimeException("Foram encontrados mais de um registros abertos com essa placa, favor verificar!");
+        }
+        if (estacionados.size() == 0) {
+            if (todosEncontrados.size() != 0) {
+                throw new RuntimeException("Esse veículo possui apenas registros fechados. Não pode ser alterado!");
+            }
+            throw new RuntimeException("Não foram encontrados Veículos estacionados com essa placa.");
+        }
+        EntradaCliente entradaCliente = estacionados.get(0);
+        entradaCliente.setModelo(novoModelo);
+        entradaCliente.setPlaca(novaPlaca);
+        entradaRepository.save(entradaCliente);
+        return entradaCliente;
+    }
+
 }
