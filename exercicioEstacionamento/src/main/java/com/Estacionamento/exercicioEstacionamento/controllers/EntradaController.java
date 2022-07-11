@@ -5,7 +5,6 @@ import com.Estacionamento.exercicioEstacionamento.dto.ResultadoFinanceiroDTO;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +14,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum.ABERTO;
-import static com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum.FECHADO;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/estacionamento")
@@ -33,17 +30,13 @@ public class EntradaController {
         return entradaCliente;
     }
 
-    @GetMapping(path = "{situacaoEnum}")
-    public Iterable<EntradaCliente> obterTodos(@PathVariable SituacaoEnum situacaoEnum) {
-        switch (situacaoEnum) {
-            case FECHADO:
-                return entradaRepository.findBySaidaNotNull();
-            case ABERTO:
-                return entradaRepository.findBySaidaIsNull();
-            default:
-                break;
-        }
-        return entradaRepository.findAll();
+    @GetMapping
+    public Iterable<EntradaCliente> obterTodos(@RequestParam(required = false) SituacaoEnum situacao) {
+        return switch (Optional.ofNullable(situacao).orElse(SituacaoEnum.TODOS)) {
+            case FECHADO -> entradaRepository.findBySaidaNotNull();
+            case ABERTO -> entradaRepository.findBySaidaIsNull();
+            default -> entradaRepository.findAll();
+        };
     }
 
     @GetMapping(path = "/abertos")
@@ -128,6 +121,29 @@ public class EntradaController {
         cliente.setEntrada(alteraEntradaClienteDTO.getEntrada());
         entradaRepository.save(cliente);
         return cliente;
+    }
+
+    @DeleteMapping(path = "/{placa}")
+    public void deletarRegistro(@PathVariable String placa) {
+        if (entradaRepository.countByPlacaIgnoreCaseAndSaidaIsNull(placa) == 0) {
+            throw new RuntimeException("Não foram encontrados registros em aberto para essa placa.");
+        }
+        entradaRepository.deleteByPlacaIgnoreCaseAndSaidaIsNull(placa);
+    }
+
+    @DeleteMapping(path = "/{placa}/{codigo}")
+    public void deletarRegistroPeloId(@PathVariable int codigo, @PathVariable String placa) {
+        Optional<EntradaCliente> entradaCliente = entradaRepository.findById(codigo);
+        if (entradaCliente.isEmpty()) {
+            throw new RuntimeException("Código (id) não encontrado.");
+        }
+        if (entradaCliente.get().getSaida() != null) {
+            throw new RuntimeException("O registro não está aberto.");
+        }
+        if (!entradaCliente.get().getPlaca().equalsIgnoreCase(placa)) {
+            throw new RuntimeException("A placa não corresponde ao código informado.");
+        }
+        entradaRepository.deleteById(codigo);
     }
 
 }
