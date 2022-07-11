@@ -38,9 +38,10 @@ public class EntradaController {
         switch (situacaoEnum) {
             case FECHADO:
                 return entradaRepository.findBySaidaNotNull();
-            case ABERTO: 
+            case ABERTO:
                 return entradaRepository.findBySaidaIsNull();
-            }
+            default:
+        }
         return entradaRepository.findAll();
     }
 
