@@ -41,6 +41,7 @@ public class EntradaController {
             case ABERTO:
                 return entradaRepository.findBySaidaIsNull();
             default:
+                break;
         }
         return entradaRepository.findAll();
     }
