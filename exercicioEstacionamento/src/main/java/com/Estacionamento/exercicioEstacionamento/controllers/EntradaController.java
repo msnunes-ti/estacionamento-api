@@ -5,6 +5,7 @@ import com.Estacionamento.exercicioEstacionamento.dto.ResultadoFinanceiroDTO;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,14 +33,15 @@ public class EntradaController {
         return entradaCliente;
     }
 
-    @GetMapping
-    public Iterable<EntradaCliente> obterTodos(SituacaoEnum situacaoEnum) {
-        List<EntradaCliente> entradaClientes = (List<EntradaCliente>) entradaRepository.findAll();
-        if (situacaoEnum == ABERTO)
-            return entradaRepository.findBySaidaIsNull();
-        if (situacaoEnum == FECHADO)
-            return entradaRepository.findBySaidaNotNull();
-        return entradaClientes;
+    @GetMapping(path = "{situacaoEnum}")
+    public Iterable<EntradaCliente> obterTodos(@PathVariable SituacaoEnum situacaoEnum) {
+        switch (situacaoEnum) {
+            case FECHADO:
+                return entradaRepository.findBySaidaNotNull();
+            case ABERTO: 
+                return entradaRepository.findBySaidaIsNull();
+            }
+        return entradaRepository.findAll();
     }
 
     @GetMapping(path = "/abertos")
