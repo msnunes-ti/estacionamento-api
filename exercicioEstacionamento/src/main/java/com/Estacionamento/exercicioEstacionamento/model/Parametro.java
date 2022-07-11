@@ -9,8 +9,27 @@ import java.math.BigDecimal;
 public class Parametro {
 
     @Id
-    Long id;
+    private Long id;
 
     @Column(name = "valor_hora")
-    BigDecimal valorHora;
+    private BigDecimal valorHora;
+
+    public Parametro() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public BigDecimal getValorHora() {
+        return valorHora;
+    }
+
+    public void setValorHora(BigDecimal valorHora) {
+        this.valorHora = valorHora;
+    }
 }
