@@ -133,14 +133,12 @@ public class EntradaController {
 
     @DeleteMapping(path = "/{placa}/{codigo}")
     public void deletarRegistroPeloId(@PathVariable int codigo, @PathVariable String placa) {
-        Optional<EntradaCliente> entradaCliente = entradaRepository.findById(codigo);
-        if (entradaCliente.isEmpty()) {
-            throw new RuntimeException("Código (id) não encontrado.");
-        }
-        if (entradaCliente.get().getSaida() != null) {
+        EntradaCliente entradaCliente = entradaRepository.findById(codigo)
+                .orElseThrow(() -> new RuntimeException("Código (id) não encontrado."));
+        if (entradaCliente.getSaida() != null) {
             throw new RuntimeException("O registro não está aberto.");
         }
-        if (!entradaCliente.get().getPlaca().equalsIgnoreCase(placa)) {
+        if (!entradaCliente.getPlaca().equalsIgnoreCase(placa)) {
             throw new RuntimeException("A placa não corresponde ao código informado.");
         }
         entradaRepository.deleteById(codigo);
