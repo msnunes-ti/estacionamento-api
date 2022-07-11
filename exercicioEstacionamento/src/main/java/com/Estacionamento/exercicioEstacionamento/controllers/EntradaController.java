@@ -2,6 +2,7 @@ package com.Estacionamento.exercicioEstacionamento.controllers;
 
 import com.Estacionamento.exercicioEstacionamento.dto.AlteraEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.dto.ResultadoFinanceiroDTO;
+import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum.ABERTO;
+import static com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum.FECHADO;
 
 @RestController
 @RequestMapping(path = "/estacionamento")
@@ -29,8 +33,13 @@ public class EntradaController {
     }
 
     @GetMapping
-    public Iterable<EntradaCliente> obterTodos() {
-        return entradaRepository.findAll();
+    public Iterable<EntradaCliente> obterTodos(SituacaoEnum situacaoEnum) {
+        List<EntradaCliente> entradaClientes = (List<EntradaCliente>) entradaRepository.findAll();
+        if (situacaoEnum == ABERTO)
+            return entradaRepository.findBySaidaIsNull();
+        if (situacaoEnum == FECHADO)
+            return entradaRepository.findBySaidaNotNull();
+        return entradaClientes;
     }
 
     @GetMapping(path = "/abertos")
