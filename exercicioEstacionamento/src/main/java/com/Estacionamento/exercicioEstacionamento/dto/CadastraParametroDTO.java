@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class CadastraParametroDTO {
 
-    @Autowired
+    @Autowired(required = true)
     private ParametroRepository parametroRepository;
 
     @NotNull
