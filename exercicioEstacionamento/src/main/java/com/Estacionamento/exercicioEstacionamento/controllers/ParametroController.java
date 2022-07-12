@@ -1,15 +1,31 @@
 package com.Estacionamento.exercicioEstacionamento.controllers;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.Estacionamento.exercicioEstacionamento.dto.CadastraParametroDTO;
+import com.Estacionamento.exercicioEstacionamento.model.Parametro;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/parametros")
 public class ParametroController {
 
+    @Autowired
+    CadastraParametroDTO cadastraParametroDTO;
+
+    @GetMapping
+    public void consultaParametroDTO() {
+        cadastraParametroDTO.consultaTodos();
+    }
+
+    @GetMapping(path = "/{codigo}")
+    public Optional<Parametro> parametro(@PathVariable Long id){
+        return cadastraParametroDTO.consultaPorId(id);
+    }
+
     @PostMapping
-    public void cadastrarParametro() {
+    public void alteraParametro(Long id, Double valor) {
 
     }
 
