@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class EntradaService {
+public class EntradaClienteService {
 
     @Autowired
     private EntradaRepository entradaRepository;
@@ -78,8 +78,6 @@ public class EntradaService {
         entradaRepository.save(entradaCliente);
         return entradaCliente;
     }
-
-
 
     public EntradaCliente alterarRegistro(@Valid AlteraEntradaClienteDTO alteraEntradaClienteDTO, String placa) {
 

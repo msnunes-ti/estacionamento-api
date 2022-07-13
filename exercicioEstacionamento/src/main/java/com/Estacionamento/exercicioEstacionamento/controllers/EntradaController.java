@@ -1,8 +1,11 @@
 package com.Estacionamento.exercicioEstacionamento.controllers;
 
 import com.Estacionamento.exercicioEstacionamento.dto.AlteraEntradaClienteDTO;
+import com.Estacionamento.exercicioEstacionamento.dto.CadastraEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
+import com.Estacionamento.exercicioEstacionamento.services.EntradaClienteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -11,10 +14,15 @@ import javax.validation.Valid;
 @RequestMapping(path = "/estacionamento")
 public class EntradaController {
 
-    @PostMapping
-    public @ResponseBody EntradaCliente novaEntrada(@Valid @RequestBody EntradaCliente entradaCliente) {
+    @Autowired
+    EntradaClienteService entradaClienteService;
 
-        return null;
+    @PostMapping
+    public @ResponseBody EntradaCliente criaNovaEntrada(@RequestBody @Valid CadastraEntradaClienteDTO criaEntradaClienteDTO) {
+        EntradaCliente entradaCliente = new EntradaCliente();
+        entradaCliente.setModelo(criaEntradaClienteDTO.getModelo());
+        entradaCliente.setPlaca(criaEntradaClienteDTO.getPlaca());
+        return entradaClienteService.novaEntrada(entradaCliente);
     }
 
     @GetMapping
@@ -51,8 +59,7 @@ public class EntradaController {
 
     @PutMapping(path = "/{placa}")
     public EntradaCliente alterarRegistro(@Valid @RequestBody AlteraEntradaClienteDTO alteraEntradaClienteDTO, @PathVariable String placa) {
-        
-        return null;
+        return entradaClienteService.alterarRegistro(alteraEntradaClienteDTO, placa);
     }
 
     @DeleteMapping(path = "/{placa}")
