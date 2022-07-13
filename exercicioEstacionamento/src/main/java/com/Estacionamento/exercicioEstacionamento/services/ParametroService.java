@@ -14,6 +14,7 @@ public class ParametroService {
 
     @Autowired
     private ParametroRepository parametroRepository;
+
     public void criaParametro(CadastraParametroDTO cadastraParametroDTO) {
         long qtde = parametroRepository.count();
         Parametro parametro = new Parametro();
