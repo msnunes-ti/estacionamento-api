@@ -22,38 +22,33 @@ public class EntradaController {
     @Autowired
     EntradaClienteService entradaClienteService;
 
+    @GetMapping(path = "/{situacaoEnum}")
+    public List<EntradaCliente> obterComSituacao(@PathVariable(required = false) SituacaoEnum situacaoEnum) {
+        return (List<EntradaCliente>) entradaClienteService.obterTodos(situacaoEnum);
+    }
+
+    @GetMapping(path = "/abertos")
+    public List<EntradaCliente> obterAbertos() {
+        return (List<EntradaCliente>) entradaClienteService.obterAbertos();
+    }
+
+    @GetMapping(path = "/finalizados")
+    public List<EntradaCliente> obterFinalizados() {
+        return (List<EntradaCliente>) entradaClienteService.obterFinalizados();
+    }
+
+    @GetMapping(path = "/{placa}")
+    public List<EntradaCliente> obterPelaPlaca(@PathVariable String placa) {
+
+        return null;
+    }
+
     @PostMapping
     public @ResponseBody EntradaCliente criaNovaEntrada(@RequestBody @Valid CadastraEntradaClienteDTO criaEntradaClienteDTO) {
         EntradaCliente entradaCliente = new EntradaCliente();
         entradaCliente.setModelo(criaEntradaClienteDTO.getModelo());
         entradaCliente.setPlaca(criaEntradaClienteDTO.getPlaca());
         return entradaClienteService.novaEntrada(entradaCliente);
-    }
-
-    @GetMapping(path = "/{situacaoEnum}")
-    public @ResponseBody List<EntradaCliente> obterComSituacao(@RequestBody(required = false) @PathVariable ObterEntradaClienteDTO situacaoEnum) {
-        Optional<ObterEntradaClienteDTO> obterEntradaClienteDTO = Optional.of(new ObterEntradaClienteDTO());
-        obterEntradaClienteDTO.get().setSituacaoEnum(TODOS);
-        return (List<EntradaCliente>) entradaClienteService.obterTodos(situacaoEnum.getSituacaoEnum());
-    }
-
-    @GetMapping(path = "/abertos")
-    public List<EntradaCliente> obterAbertos() {
-
-
-        return null;
-    }
-
-    @GetMapping(path = "/finalizados")
-    public List<EntradaCliente> obterFinalizados() {
-
-        return null;
-    }
-
-    @GetMapping(path = "/{placa}/pesquisa")
-    public List<EntradaCliente> obterPelaPlaca(@PathVariable String placa) {
-
-        return null;
     }
 
     @PutMapping(path = "/{placa}/saida")
