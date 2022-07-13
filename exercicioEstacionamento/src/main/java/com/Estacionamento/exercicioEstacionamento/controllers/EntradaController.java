@@ -31,13 +31,10 @@ public class EntradaController {
     }
 
     @GetMapping(path = "/{situacaoEnum}")
-    public @ResponseBody List<EntradaCliente> obterComSituacao(@RequestBody(required = false) @PathVariable SituacaoEnum situacaoEnum) {
-    Optional<ObterEntradaClienteDTO> obterEntradaClienteDTO = Optional.of(new ObterEntradaClienteDTO());
-    if (!obterEntradaClienteDTO.isPresent()) {
-        ObterEntradaClienteDTO obterEntradaClienteDTO1 = new ObterEntradaClienteDTO();
-        obterEntradaClienteDTO1.setSituacaoEnum(TODOS);
-    }
-    return (List<EntradaCliente>) entradaClienteService.obterTodos(situacaoEnum);
+    public @ResponseBody List<EntradaCliente> obterComSituacao(@RequestBody(required = false) @PathVariable ObterEntradaClienteDTO situacaoEnum) {
+        Optional<ObterEntradaClienteDTO> obterEntradaClienteDTO = Optional.of(new ObterEntradaClienteDTO());
+        obterEntradaClienteDTO.get().setSituacaoEnum(TODOS);
+        return (List<EntradaCliente>) entradaClienteService.obterTodos(situacaoEnum.getSituacaoEnum());
     }
 
     @GetMapping(path = "/abertos")
