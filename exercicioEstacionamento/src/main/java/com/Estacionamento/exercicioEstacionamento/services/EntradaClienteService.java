@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum.TODOS;
+
 @Service
 public class EntradaClienteService {
 
@@ -30,7 +32,7 @@ public class EntradaClienteService {
     }
 
     public Iterable<EntradaCliente> obterTodos(SituacaoEnum situacao) {
-        return switch (Optional.ofNullable(situacao).orElse(SituacaoEnum.TODOS)) {
+        return switch (Optional.ofNullable(situacao).orElse(TODOS)) {
             case FECHADO -> entradaRepository.findBySaidaNotNull();
             case ABERTO -> entradaRepository.findBySaidaIsNull();
             default -> entradaRepository.findAll();

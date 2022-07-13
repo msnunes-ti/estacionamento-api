@@ -2,6 +2,7 @@ package com.Estacionamento.exercicioEstacionamento.controllers;
 
 import com.Estacionamento.exercicioEstacionamento.dto.AlteraEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.dto.CadastraEntradaClienteDTO;
+import com.Estacionamento.exercicioEstacionamento.dto.ObterEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.services.EntradaClienteService;
@@ -9,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+
+import static com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum.*;
 
 @RestController
 @RequestMapping(path = "/estacionamento")
@@ -25,28 +30,31 @@ public class EntradaController {
         return entradaClienteService.novaEntrada(entradaCliente);
     }
 
-    @GetMapping
-    public Iterable<EntradaCliente> obterTodos(@RequestParam(required = false) SituacaoEnum situacao) {
-
-
-        return null;
+    @GetMapping(path = "/{situacaoEnum}")
+    public @ResponseBody List<EntradaCliente> obterComSituacao(@RequestBody(required = false) @PathVariable SituacaoEnum situacaoEnum) {
+    Optional<ObterEntradaClienteDTO> obterEntradaClienteDTO = Optional.of(new ObterEntradaClienteDTO());
+    if (!obterEntradaClienteDTO.isPresent()) {
+        ObterEntradaClienteDTO obterEntradaClienteDTO1 = new ObterEntradaClienteDTO();
+        obterEntradaClienteDTO1.setSituacaoEnum(TODOS);
+    }
+    return (List<EntradaCliente>) entradaClienteService.obterTodos(situacaoEnum);
     }
 
     @GetMapping(path = "/abertos")
-    public Iterable<EntradaCliente> obterAbertos() {
+    public List<EntradaCliente> obterAbertos() {
 
 
         return null;
     }
 
     @GetMapping(path = "/finalizados")
-    public Iterable<EntradaCliente> obterFinalizados() {
+    public List<EntradaCliente> obterFinalizados() {
 
         return null;
     }
 
     @GetMapping(path = "/{placa}/pesquisa")
-    public Iterable<EntradaCliente> obterPelaPlaca(@PathVariable String placa) {
+    public List<EntradaCliente> obterPelaPlaca(@PathVariable String placa) {
 
         return null;
     }
