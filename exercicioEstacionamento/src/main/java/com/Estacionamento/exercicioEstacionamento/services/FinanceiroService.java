@@ -1,9 +1,8 @@
 package com.Estacionamento.exercicioEstacionamento.services;
 
-import com.Estacionamento.exercicioEstacionamento.controllers.EntradaController;
-import com.Estacionamento.exercicioEstacionamento.dto.ResultadoFinanceiroDTO;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.model.Financeiro;
+import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +14,13 @@ import java.util.List;
 public class FinanceiroService {
 
     @Autowired
-    EntradaController entradaController;
-   
+    EntradaRepository entradaRepository;
+
     public Financeiro relatorioGeralFinanceiro() {
         long quantidadeDeRegistros = 0;
         BigDecimal valorTotal = BigDecimal.ZERO;
         List<EntradaCliente> todosJaFinalizados = new ArrayList<>();
-        todosJaFinalizados = (List<EntradaCliente>) obterFinalizados();
+        todosJaFinalizados = obterFinalizados();
         if (todosJaFinalizados.isEmpty()) {
             throw new RuntimeException("Não foram encontrados lançamentos finalizados");
         }
@@ -36,6 +35,6 @@ public class FinanceiroService {
     }
 
     private List<EntradaCliente> obterFinalizados() {
-        return (List<EntradaCliente>) entradaController.obterFinalizados();
+        return entradaRepository.findBySaidaIsNull();
     }
 }

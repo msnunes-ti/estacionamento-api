@@ -1,2 +1,4 @@
-package com.Estacionamento.exercicioEstacionamento.dto;public class CriaEntradaCloienteDTO {
+package com.Estacionamento.exercicioEstacionamento.dto;
+
+public class CriaEntradaClienteDTO {
 }

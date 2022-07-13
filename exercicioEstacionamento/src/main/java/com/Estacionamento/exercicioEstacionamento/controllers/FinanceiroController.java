@@ -1,6 +1,5 @@
 package com.Estacionamento.exercicioEstacionamento.controllers;
 
-import com.Estacionamento.exercicioEstacionamento.dto.ResultadoFinanceiroDTO;
 import com.Estacionamento.exercicioEstacionamento.model.Financeiro;
 import com.Estacionamento.exercicioEstacionamento.services.FinanceiroService;
 import org.springframework.beans.factory.annotation.Autowired;
