@@ -85,24 +85,7 @@ public class EntradaController {
         return entradaCliente;
     }
 
-    @GetMapping(path = "/financeiro")
-    public ResultadoFinanceiroDTO relatorioGeralFinanceiro() {
-        int quantidadeDeRegistros = 0;
-        BigDecimal valorTotal = BigDecimal.ZERO;
-        List<EntradaCliente> todosJaFinalizados = new ArrayList<>();
-        todosJaFinalizados = (List<EntradaCliente>) obterFinalizados();
-        if (todosJaFinalizados.isEmpty()) {
-            throw new RuntimeException("Não foram encontrados lançamentos finalizados");
-        }
-        for (EntradaCliente e : todosJaFinalizados) {
-            valorTotal = valorTotal.add(e.getValor());
-            quantidadeDeRegistros ++;
-        }
-        ResultadoFinanceiroDTO resultado = new ResultadoFinanceiroDTO();
-        resultado.setRegistros(quantidadeDeRegistros);
-        resultado.setValorTotal(valorTotal);
-        return resultado;
-    }
+
 
     @PutMapping(path = "/{placa}")
     public EntradaCliente alterarRegistro(@Valid @RequestBody AlteraEntradaClienteDTO alteraEntradaClienteDTO, @PathVariable String placa) {
