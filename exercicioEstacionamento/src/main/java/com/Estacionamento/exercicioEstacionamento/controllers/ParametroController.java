@@ -2,41 +2,38 @@ package com.Estacionamento.exercicioEstacionamento.controllers;
 
 import com.Estacionamento.exercicioEstacionamento.dto.CadastraParametroDTO;
 import com.Estacionamento.exercicioEstacionamento.model.Parametro;
+import com.Estacionamento.exercicioEstacionamento.services.ParametroService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
+import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/parametros")
 public class ParametroController {
 
-    CadastraParametroDTO cadastraParametroDTO;
+    @Autowired
+    private ParametroService parametroService;
 
     @PostMapping
-    public void criaParametro(Double valor) {
-        List<Parametro> parametros = (List<Parametro>) cadastraParametroDTO.consultaTodos();
-        if (parametros.size() == 0) {
-            cadastraParametroDTO.criaParametro(BigDecimal.valueOf(valor));
-        }
-        throw new RuntimeException("O Parametro já está criado então, somento pode ser alterado!");
+    public void criaParametro(@RequestBody @Valid CadastraParametroDTO cadastraParametroDTO) {
+        parametroService.criaParametro(cadastraParametroDTO);
     }
 
     @GetMapping
-    public Iterable<Parametro> consultaParametroDTO() {
-        List<Parametro> parametros = (List<Parametro>) cadastraParametroDTO.consultaTodos();
-        if (parametros.size() == 0) {
-            throw new RuntimeException("Não foram encontrados parametros cadastrados.");
-        }
-        return parametros;
+    public List<Parametro> consultaParametro() {
+        return parametroService.consultaParametro();
     }
 
     @GetMapping(path = "/{codigo}")
-    public Optional<Parametro> parametro(@PathVariable Long id){
-        return cadastraParametroDTO.consultaPorId(id);
+    public Parametro parametro(@PathVariable Long codigo){
+        return parametroService.encontraParametroPeloId(codigo);
     }
 
-
+    @PutMapping(path = "/{codigo}")
+    public void atualizaParametro(@PathVariable Long codigo, @RequestBody @Valid CadastraParametroDTO cadastraParametroDTO) {
+        parametroService.atualizaParametro(codigo, cadastraParametroDTO);
+    }
 
 }
