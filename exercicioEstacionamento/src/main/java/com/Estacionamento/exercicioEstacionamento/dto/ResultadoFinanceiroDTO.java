@@ -1,5 +1,7 @@
 package com.Estacionamento.exercicioEstacionamento.dto;
 
+import com.Estacionamento.exercicioEstacionamento.model.Financeiro;
+
 import java.math.BigDecimal;
 
 public class ResultadoFinanceiroDTO {
