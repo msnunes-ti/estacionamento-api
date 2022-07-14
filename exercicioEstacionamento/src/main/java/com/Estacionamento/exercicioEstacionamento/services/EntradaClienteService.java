@@ -6,7 +6,7 @@ import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
@@ -67,7 +67,9 @@ public class EntradaClienteService {
     }
 
 //    public List<EntradaCliente> obterPorDatas(LocalDate dataEntrada, LocalDate dataSaida){
-//        return entradaRepository.findAllCampStart_dateBetweenAndSaidaIsNull(dataEntrada, dataSaida);
+//        LocalDateTime entrada = dataEntrada.atStartOfDay();
+//        LocalDateTime saida = dataSaida.atTime(23,59,59,59);
+//        return entradaRepository.findByStartDateBetweenAndSaidaIsNull(entrada, saida);
 //    }
 
     public EntradaCliente registraSaida(String placa) {

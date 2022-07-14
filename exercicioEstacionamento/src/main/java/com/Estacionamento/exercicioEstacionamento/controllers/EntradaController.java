@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -46,13 +47,13 @@ public class EntradaController {
         return entradaClienteService.obterPelaPlaca(obterEntradaClienteDTO.getPlaca());
     }
 
-//    @GetMapping(path = "/{dataEntrada}/{dataSaida}")
-//    public List<EntradaCliente> obterPorDatas(@PathVariable @Valid @RequestBody ObterPorDatasEntradaClienteDTO obterPorDatasEntradaClienteDTO) {
-//        LocalDate dataEntrada = obterPorDatasEntradaClienteDTO.getDataEntrada();
-//        LocalDate dataSaida = obterPorDatasEntradaClienteDTO.getDataSaida();
-//
-//        return null;
-//    }
+    @GetMapping(path = "/{dataEntrada}/{dataSaida}")
+    public List<EntradaCliente> obterPorDatas(@PathVariable @Valid @RequestBody ObterPorDatasEntradaClienteDTO obterPorDatasEntradaClienteDTO) {
+        LocalDate dataEntrada = obterPorDatasEntradaClienteDTO.getDataEntrada();
+        LocalDate dataSaida = obterPorDatasEntradaClienteDTO.getDataSaida();
+        return null;
+//        return entradaClienteService.obterPorDatas(dataEntrada, dataSaida);
+    }
 
     @PostMapping
     public @ResponseBody EntradaCliente criaNovaEntrada(@RequestBody @Valid CadastraEntradaClienteDTO criaEntradaClienteDTO) {
@@ -63,10 +64,10 @@ public class EntradaController {
     }
 
     @PutMapping(path = "/{placa}/saida")
-    public void registraSaida(@PathVariable String placa) {
+    public EntradaCliente registraSaida(@PathVariable String placa) {
         SaidaEntradaClienteDTO saidaEntradaClienteDTO = new SaidaEntradaClienteDTO();
         saidaEntradaClienteDTO.setPlaca(placa);
-        entradaClienteService.registraSaida(saidaEntradaClienteDTO.getPlaca());
+        return entradaClienteService.registraSaida(saidaEntradaClienteDTO.getPlaca());
     }
 
     @PutMapping(path = "/{placa}")
