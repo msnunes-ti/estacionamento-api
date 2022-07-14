@@ -2,6 +2,7 @@ package com.Estacionamento.exercicioEstacionamento.controllers;
 
 import com.Estacionamento.exercicioEstacionamento.dto.AlteraEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.dto.CadastraEntradaClienteDTO;
+import com.Estacionamento.exercicioEstacionamento.dto.FechaEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.dto.ObterEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +25,7 @@ public class EntradaController {
     EntradaClienteService entradaClienteService;
 
     @GetMapping(path = "/{situacaoEnum}")
-    public List<EntradaCliente> obterComSituacao(@PathVariable(required = false) SituacaoEnum situacaoEnum) {
+    public List<EntradaCliente> obterComSituacao(@PathVariable SituacaoEnum situacaoEnum) {
         return (List<EntradaCliente>) entradaClienteService.obterTodos(situacaoEnum);
     }
 
@@ -37,10 +39,11 @@ public class EntradaController {
         return (List<EntradaCliente>) entradaClienteService.obterFinalizados();
     }
 
-    @GetMapping(path = "/{placa}")
-    public List<EntradaCliente> obterPelaPlaca(@PathVariable String placa) {
-
-        return null;
+    @GetMapping(path = "/{placa}/obter")
+    public List<EntradaCliente> obterPelaPlaca(@PathVariable @Valid String placa) {
+        ObterEntradaClienteDTO obterEntradaClienteDTO = new ObterEntradaClienteDTO();
+        obterEntradaClienteDTO.setPlaca(placa);
+        return (List<EntradaCliente>) entradaClienteService.obterPelaPlaca(obterEntradaClienteDTO.getPlaca());
     }
 
     @PostMapping
@@ -52,9 +55,8 @@ public class EntradaController {
     }
 
     @PutMapping(path = "/{placa}/saida")
-    public EntradaCliente registraSaida(@PathVariable String placa) {
-
-        return null;
+    public void registraSaida(@PathVariable String placa) {
+        entradaClienteService.registraSaida(placa);
     }
 
     @PutMapping(path = "/{placa}")
