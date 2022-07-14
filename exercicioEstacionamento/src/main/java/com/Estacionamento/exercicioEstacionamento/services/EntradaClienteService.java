@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class EntradaClienteService {
         return entradaCliente;
     }
 
-    public Iterable<EntradaCliente> obterTodos(SituacaoEnum situacao) {
+    public List<EntradaCliente> obterTodos(SituacaoEnum situacao) {
         return switch (Optional.ofNullable(situacao).orElse(TODOS)) {
             case FECHADO -> entradaRepository.findBySaidaNotNull();
             case ABERTO -> entradaRepository.findBySaidaIsNull();
@@ -50,7 +51,7 @@ public class EntradaClienteService {
         return abertos;
     }
 
-    public Iterable<EntradaCliente> obterFinalizados() {
+    public List<EntradaCliente> obterFinalizados() {
         List<EntradaCliente> todos = (List<EntradaCliente>) entradaRepository.findAll();
         List<EntradaCliente> finalizados = new ArrayList<>();
         for (EntradaCliente e : todos) {
@@ -61,9 +62,13 @@ public class EntradaClienteService {
         return finalizados;
     }
 
-    public Iterable<EntradaCliente> obterPelaPlaca(String placa) {
+    public List<EntradaCliente> obterPelaPlaca(String placa) {
         return entradaRepository.findByPlacaContainingIgnoreCase(placa);
     }
+
+//    public List<EntradaCliente> obterPorDatas(LocalDate dataEntrada, LocalDate dataSaida){
+//        return entradaRepository.findAllCampStart_dateBetweenAndSaidaIsNull(dataEntrada, dataSaida);
+//    }
 
     public EntradaCliente registraSaida(String placa) {
         List<EntradaCliente> entradaClientes = entradaRepository.findByPlacaIgnoreCaseAndSaidaIsNull(placa);
@@ -88,7 +93,7 @@ public class EntradaClienteService {
             throw new RuntimeException("Foram encontrados mais de um registros abertos com essa placa, favor verificar!");
         }
         if (estacionados == 0) {
-            throw new RuntimeException("Não foi encontrado nenhum registro de entrada desse veículo.");
+            throw new RuntimeException("Não foi encontrado nenhum registro aberto desse veículo.");
         }
         List<EntradaCliente> entradaClientes = entradaRepository.findByPlacaIgnoreCaseAndSaidaIsNull(placa);
         EntradaCliente cliente = entradaClientes.get(0);
@@ -103,10 +108,15 @@ public class EntradaClienteService {
         if (entradaRepository.countByPlacaIgnoreCaseAndSaidaIsNull(placa) == 0) {
             throw new RuntimeException("Não foram encontrados registros em aberto para essa placa.");
         }
-        entradaRepository.deleteByPlacaIgnoreCaseAndSaidaIsNull(placa);
+        if (entradaRepository.countByPlacaIgnoreCaseAndSaidaIsNull(placa) > 1) {
+            throw new RuntimeException("Foram encontradas mais de uma entrada em aberto para essa placa");
+        }
+        List<EntradaCliente> entradaClientes = entradaRepository.findByPlacaIgnoreCaseAndSaidaIsNull(placa);
+        Long id = entradaClientes.get(0).getId();
+        deletarRegistroPeloId(id, placa);
     }
 
-    public void deletarRegistroPeloId(@PathVariable int codigo, @PathVariable String placa) {
+    public void deletarRegistroPeloId(@PathVariable Long codigo, @PathVariable String placa) {
         EntradaCliente entradaCliente = entradaRepository.findById(codigo)
                 .orElseThrow(() -> new RuntimeException("Código (id) não encontrado."));
         if (entradaCliente.getSaida() != null) {

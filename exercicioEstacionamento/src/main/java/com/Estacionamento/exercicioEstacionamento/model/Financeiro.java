@@ -4,15 +4,14 @@ import java.math.BigDecimal;
 
 public class Financeiro {
 
-    private Long numeroDeRegistros;
+    private int numeroDeRegistros;
 
     private BigDecimal valorTotal;
 
-    public Long getNumeroDeRegistros() {
-        return numeroDeRegistros;
+    public int getNumeroDeRegistros() { return numeroDeRegistros;
     }
 
-    public void setNumeroDeRegistros(Long numeroDeRegistros) {
+    public void setNumeroDeRegistros(int numeroDeRegistros) {
         this.numeroDeRegistros = numeroDeRegistros;
     }
 

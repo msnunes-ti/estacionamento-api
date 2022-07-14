@@ -14,7 +14,7 @@ public class EntradaCliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     @NotBlank
     @NotNull
@@ -33,11 +33,11 @@ public class EntradaCliente {
     public EntradaCliente() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

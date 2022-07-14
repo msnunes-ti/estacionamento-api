@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,10 +16,9 @@ public class FinanceiroService {
     EntradaRepository entradaRepository;
 
     public Financeiro relatorioGeralFinanceiro() {
-        long quantidadeDeRegistros = 0;
+        int quantidadeDeRegistros = 0;
         BigDecimal valorTotal = BigDecimal.ZERO;
-        List<EntradaCliente> todosJaFinalizados = new ArrayList<>();
-        todosJaFinalizados = obterFinalizados();
+        List<EntradaCliente> todosJaFinalizados = obterFinalizados();
         if (todosJaFinalizados.isEmpty()) {
             throw new RuntimeException("Não foram encontrados lançamentos finalizados");
         }
@@ -35,6 +33,6 @@ public class FinanceiroService {
     }
 
     private List<EntradaCliente> obterFinalizados() {
-        return entradaRepository.findBySaidaIsNull();
+        return entradaRepository.findBySaidaNotNull();
     }
 }
