@@ -4,9 +4,19 @@ import java.math.BigDecimal;
 
 public class Financeiro {
 
+    private BigDecimal valorHora;
+
     private int numeroDeRegistros;
 
     private BigDecimal valorTotal;
+
+    public BigDecimal getValorHora() {
+        return valorHora;
+    }
+
+    public void setValorHora(BigDecimal valorHora) {
+        this.valorHora = valorHora;
+    }
 
     public int getNumeroDeRegistros() { return numeroDeRegistros;
     }

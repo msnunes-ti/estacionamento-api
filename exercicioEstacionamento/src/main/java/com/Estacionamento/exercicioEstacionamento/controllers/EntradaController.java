@@ -3,14 +3,15 @@ package com.Estacionamento.exercicioEstacionamento.controllers;
 import com.Estacionamento.exercicioEstacionamento.dto.*;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
+import com.Estacionamento.exercicioEstacionamento.model.Parametro;
 import com.Estacionamento.exercicioEstacionamento.services.EntradaClienteService;
+import com.Estacionamento.exercicioEstacionamento.services.ParametroService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -19,6 +20,9 @@ public class EntradaController {
 
     @Autowired
     EntradaClienteService entradaClienteService;
+
+    @Autowired
+    ParametroService parametroService;
 
     @GetMapping(path = "/{situacaoEnum}")
     public List<EntradaCliente> obterComSituacao(@PathVariable SituacaoEnum situacaoEnum) {
@@ -58,7 +62,7 @@ public class EntradaController {
     }
 
     @PostMapping
-    public @ResponseBody EntradaCliente criaNovaEntrada(@RequestBody @Valid CadastraEntradaClienteDTO criaEntradaClienteDTO) {
+    public @ResponseBody EntradaCliente criaNovaEntrada(@RequestBody @Valid @NotNull CadastraEntradaClienteDTO criaEntradaClienteDTO) {
         EntradaCliente entradaCliente = new EntradaCliente();
         entradaCliente.setModelo(criaEntradaClienteDTO.getModelo());
         entradaCliente.setPlaca(criaEntradaClienteDTO.getPlaca());
@@ -66,10 +70,13 @@ public class EntradaController {
     }
 
     @PutMapping(path = "/{placa}/saida")
-    public EntradaCliente registraSaida(@PathVariable String placa) {
+    public SaidaEntradaClienteDTO registraSaida(@PathVariable String placa) {
         SaidaEntradaClienteDTO saidaEntradaClienteDTO = new SaidaEntradaClienteDTO();
         saidaEntradaClienteDTO.setPlaca(placa);
-        return entradaClienteService.registraSaida(saidaEntradaClienteDTO.getPlaca());
+        saidaEntradaClienteDTO.setEntradaCliente(entradaClienteService.registraSaida(saidaEntradaClienteDTO.getPlaca()));
+        List<Parametro> parametros = parametroService.consultaParametro();
+        saidaEntradaClienteDTO.setValorHora(parametros.get(0).getValorHora());
+        return saidaEntradaClienteDTO;
     }
 
     @PutMapping(path = "/{placa}")

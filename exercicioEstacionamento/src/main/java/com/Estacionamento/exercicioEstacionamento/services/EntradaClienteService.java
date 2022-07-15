@@ -3,7 +3,9 @@ package com.Estacionamento.exercicioEstacionamento.services;
 import com.Estacionamento.exercicioEstacionamento.dto.AlteraEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
+import com.Estacionamento.exercicioEstacionamento.model.Parametro;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
+import com.Estacionamento.exercicioEstacionamento.repository.ParametroRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,9 @@ public class EntradaClienteService {
 
     @Autowired
     private EntradaRepository entradaRepository;
+
+    @Autowired
+    private ParametroRepository parametroRepository;
 
 
     public EntradaCliente novaEntrada(@Valid EntradaCliente entradaCliente) {
@@ -70,8 +75,10 @@ public class EntradaClienteService {
     public List<EntradaCliente> obterPorDatas(@NotNull LocalDate dataInicial, @NotNull LocalDate dataFinal){
         LocalDateTime inicial = dataInicial.atStartOfDay();
         LocalDateTime saida = dataFinal.atTime(23,59,59,59);
+        if (inicial.isAfter(saida)) {
+            throw new RuntimeException("A data final é menor que a data inicial");
+        }
         return entradaRepository.findByEntradaIsBetweenAndSaidaIsNull(inicial, saida);
-
     }
 
     public EntradaCliente registraSaida(String placa) {
@@ -85,7 +92,11 @@ public class EntradaClienteService {
         EntradaCliente entradaCliente = entradaClientes.get(0);
         entradaCliente.setSaida(LocalDateTime.now());
         int horas = (int) entradaCliente.getEntrada().until(entradaCliente.getSaida(), ChronoUnit.HOURS);
-        entradaCliente.setValor(BigDecimal.valueOf(5L * (horas + 1))); // 5.0 é o valor da hora do estacionamento
+        Optional<Parametro> parametro = parametroRepository.findById(1L);
+        if (parametro.isEmpty()) {
+            throw new RuntimeException("Paramentro não encontrado");
+        }
+        entradaCliente.setValor(parametro.get().getValorHora().multiply(BigDecimal.valueOf(horas + 1)));
         entradaRepository.save(entradaCliente);
         return entradaCliente;
     }

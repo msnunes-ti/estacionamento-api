@@ -26,7 +26,7 @@ public class ParametroService {
     }
 
     public List<Parametro> consultaParametro() {
-        List<Parametro> parametros = (List<Parametro>) parametroRepository.findAll();
+        List<Parametro> parametros = parametroRepository.findAll();
         if (parametros.size() == 0) {
             throw new RuntimeException("Não foram encontrados parametros cadastrados.");
         }

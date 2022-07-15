@@ -3,6 +3,7 @@ package com.Estacionamento.exercicioEstacionamento.services;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.model.Financeiro;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
+import com.Estacionamento.exercicioEstacionamento.repository.FinanceiroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class FinanceiroService {
         return resultado;
     }
 
-    private List<EntradaCliente> obterFinalizados() {
+    public List<EntradaCliente> obterFinalizados() {
         return entradaRepository.findBySaidaNotNull();
     }
 }
