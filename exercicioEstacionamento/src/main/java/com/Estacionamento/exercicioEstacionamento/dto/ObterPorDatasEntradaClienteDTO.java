@@ -1,28 +1,30 @@
 package com.Estacionamento.exercicioEstacionamento.dto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 
 public class ObterPorDatasEntradaClienteDTO {
 
-    private LocalDate dataEntrada;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate dataInicial;
 
-    private LocalDate dataSaida;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate dataFinal;
 
-    public LocalDate getDataEntrada() {
-        return dataEntrada;
+    public LocalDate getDataInicial() {
+        return dataInicial;
     }
 
-    public void setDataEntrada(LocalDate dataEntrada) {
-        this.dataEntrada = dataEntrada;
+    public void setDataInicial(LocalDate dataInicial) {
+        this.dataInicial = dataInicial;
     }
 
-    public LocalDate getDataSaida() {
-        return dataSaida;
+    public LocalDate getDataFinal() {
+        return dataFinal;
     }
 
-    public void setDataSaida(LocalDate dataSaida) {
-        this.dataSaida = dataSaida;
+    public void setDataFinal(LocalDate dataFinal) {
+        this.dataFinal = dataFinal;
     }
 }

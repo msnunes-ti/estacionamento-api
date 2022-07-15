@@ -4,11 +4,13 @@ import com.Estacionamento.exercicioEstacionamento.dto.*;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.services.EntradaClienteService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -47,12 +49,12 @@ public class EntradaController {
         return entradaClienteService.obterPelaPlaca(obterEntradaClienteDTO.getPlaca());
     }
 
-    @GetMapping(path = "/{dataEntrada}/{dataSaida}")
-    public List<EntradaCliente> obterPorDatas(@PathVariable @Valid @RequestBody ObterPorDatasEntradaClienteDTO obterPorDatasEntradaClienteDTO) {
-        LocalDate dataEntrada = obterPorDatasEntradaClienteDTO.getDataEntrada();
-        LocalDate dataSaida = obterPorDatasEntradaClienteDTO.getDataSaida();
-        return null;
-//        return entradaClienteService.obterPorDatas(dataEntrada, dataSaida);
+    @GetMapping(path = "/{dataInicial}/{dataFinal}")
+    public List<EntradaCliente> obterPorDatas(@PathVariable String dataInicial, @PathVariable String dataFinal) {
+        ObterPorDatasEntradaClienteDTO intervalo = new ObterPorDatasEntradaClienteDTO();
+        intervalo.setDataFinal(LocalDate.parse(dataFinal));
+        intervalo.setDataInicial(LocalDate.parse(dataInicial));
+        return entradaClienteService.obterPorDatas(intervalo.getDataInicial(), intervalo.getDataFinal());
     }
 
     @PostMapping

@@ -4,6 +4,7 @@ import com.Estacionamento.exercicioEstacionamento.dto.AlteraEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,11 +67,12 @@ public class EntradaClienteService {
         return entradaRepository.findByPlacaContainingIgnoreCase(placa);
     }
 
-//    public List<EntradaCliente> obterPorDatas(LocalDate dataEntrada, LocalDate dataSaida){
-//        LocalDateTime entrada = dataEntrada.atStartOfDay();
-//        LocalDateTime saida = dataSaida.atTime(23,59,59,59);
-//        return entradaRepository.findByStartDateBetweenAndSaidaIsNull(entrada, saida);
-//    }
+    public List<EntradaCliente> obterPorDatas(@NotNull LocalDate dataInicial, @NotNull LocalDate dataFinal){
+        LocalDateTime inicial = dataInicial.atStartOfDay();
+        LocalDateTime saida = dataFinal.atTime(23,59,59,59);
+        return entradaRepository.findByEntradaIsBetweenAndSaidaIsNull(inicial, saida);
+
+    }
 
     public EntradaCliente registraSaida(String placa) {
         List<EntradaCliente> entradaClientes = entradaRepository.findByPlacaIgnoreCaseAndSaidaIsNull(placa);

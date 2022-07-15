@@ -20,7 +20,6 @@ public interface EntradaRepository extends JpaRepository<EntradaCliente, Long> {
 
     void deleteByPlacaIgnoreCaseAndSaidaIsNull(String placa);
 
-    List<EntradaCliente> findDateIsBetweenStartAnd (LocalDateTime dataEntrada, LocalDateTime dataSaida);
+   List<EntradaCliente> findByEntradaIsBetweenAndSaidaIsNull (LocalDateTime entrada, LocalDateTime saida);
 
-cd id
 }
