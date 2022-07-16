@@ -54,7 +54,7 @@ public class EntradaController {
     }
 
     @GetMapping(path = "/{dataInicial}/{dataFinal}")
-    public List<EntradaCliente> obterPorDatas(@PathVariable String dataInicial, @PathVariable String dataFinal) {
+    public List<EntradaCliente> obterPorDatas(@PathVariable @NotNull String dataInicial, @PathVariable @NotNull String dataFinal) {
         ObterPorDatasEntradaClienteDTO intervalo = new ObterPorDatasEntradaClienteDTO();
         intervalo.setDataFinal(LocalDate.parse(dataFinal));
         intervalo.setDataInicial(LocalDate.parse(dataInicial));
