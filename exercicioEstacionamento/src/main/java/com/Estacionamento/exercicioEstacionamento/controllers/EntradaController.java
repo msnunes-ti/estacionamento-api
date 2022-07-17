@@ -3,15 +3,12 @@ package com.Estacionamento.exercicioEstacionamento.controllers;
 import com.Estacionamento.exercicioEstacionamento.dto.*;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
-import com.Estacionamento.exercicioEstacionamento.model.Parametro;
 import com.Estacionamento.exercicioEstacionamento.services.EntradaClienteService;
-import com.Estacionamento.exercicioEstacionamento.services.ParametroService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -20,9 +17,6 @@ public class EntradaController {
 
     @Autowired
     EntradaClienteService entradaClienteService;
-
-    @Autowired
-    ParametroService parametroService;
 
     @GetMapping(path = "/abertos")
     public List<EntradaCliente> obterAbertos() {
