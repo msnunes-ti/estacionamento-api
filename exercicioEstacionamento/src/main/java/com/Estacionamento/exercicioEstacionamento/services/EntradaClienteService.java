@@ -31,8 +31,8 @@ public class EntradaClienteService {
     @Autowired
     private EntradaRepository entradaRepository;
 
-    @Autowired
-    private ParametroRepository parametroRepository;
+//    @Autowired
+//    private ParametroRepository parametroRepository;
 
     @Autowired
     private ParametroService parametroService;
@@ -78,7 +78,7 @@ public class EntradaClienteService {
     }
 
     public Iterable<EntradaCliente> obterAbertos() {
-        List<EntradaCliente> todos = (List<EntradaCliente>) entradaRepository.findAll();
+        List<EntradaCliente> todos = entradaRepository.findAll();
         List<EntradaCliente> abertos = new ArrayList<>();
         for (EntradaCliente e : todos) {
             if (e.getSaida() == null) {
@@ -89,7 +89,7 @@ public class EntradaClienteService {
     }
 
     public List<EntradaCliente> obterFinalizados() {
-        List<EntradaCliente> todos = (List<EntradaCliente>) entradaRepository.findAll();
+        List<EntradaCliente> todos = entradaRepository.findAll();
         List<EntradaCliente> finalizados = new ArrayList<>();
         for (EntradaCliente e : todos) {
             if (e.getSaida() != null) {
