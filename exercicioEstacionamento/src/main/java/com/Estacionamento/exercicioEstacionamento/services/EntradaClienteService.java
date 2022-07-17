@@ -62,9 +62,9 @@ public class EntradaClienteService {
             throw new RuntimeException("A data final é menor que a data inicial");
         }
         return switch (Optional.ofNullable(situacao).orElse(TODOS)) {
-            case FECHADO -> entradaRepository.findBySaidaNotNull();
+            case FECHADO -> entradaRepository.findByEntradaIsBetweenAndSaidaNotNull(dataInicio, dataFim);
             case ABERTO -> entradaRepository.findByEntradaIsBetweenAndSaidaIsNull(dataInicio, dataFim);
-            default -> entradaRepository.findAll();
+            default -> entradaRepository.findByEntradaIsBetween(dataInicio, dataFim);
         };
     }
 

@@ -23,6 +23,8 @@ public interface EntradaRepository extends JpaRepository<EntradaCliente, Long> {
    List<EntradaCliente> findByEntradaIsBetweenAndSaidaIsNull (LocalDateTime entrada, LocalDateTime saida);
 
    List<EntradaCliente> findByEntradaIsBetweenAndSaidaNotNull (LocalDateTime entrada, LocalDateTime saida);
-   
+
+    List<EntradaCliente> findByEntradaIsBetween (LocalDateTime entrada, LocalDateTime saida);
+
 
 }
