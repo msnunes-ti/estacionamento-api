@@ -24,14 +24,6 @@ public class EntradaController {
     @Autowired
     ParametroService parametroService;
 
-    @GetMapping(path = "/{situacaoEnum}")
-    public List<EntradaCliente> obterComSituacao(@PathVariable SituacaoEnum situacaoEnum) {
-        ObterEntradaClienteDTO obterEntradaClienteDTO = new ObterEntradaClienteDTO();
-        obterEntradaClienteDTO.setSituacaoEnum(situacaoEnum);
-        obterEntradaClienteDTO.setEntradaClientes(entradaClienteService.obterTodos(obterEntradaClienteDTO.getSituacaoEnum()));
-        return obterEntradaClienteDTO.getEntradaClientes();
-    }
-
     @GetMapping(path = "/abertos")
     public List<EntradaCliente> obterAbertos() {
         ObterEntradaClienteDTO obterEntradaClienteDTO = new ObterEntradaClienteDTO();
@@ -53,30 +45,19 @@ public class EntradaController {
         return entradaClienteService.obterPelaPlaca(obterEntradaClienteDTO.getPlaca());
     }
 
-    @GetMapping(path = "/{dataInicial}/{dataFinal}")
-    public List<EntradaCliente> obterPorDatas(@PathVariable @NotNull String dataInicial, @PathVariable @NotNull String dataFinal) {
-        ObterPorDatasEntradaClienteDTO intervalo = new ObterPorDatasEntradaClienteDTO();
-        intervalo.setDataFinal(LocalDate.parse(dataFinal));
-        intervalo.setDataInicial(LocalDate.parse(dataInicial));
-        return entradaClienteService.obterPorDatas(intervalo.getDataInicial(), intervalo.getDataFinal());
+    @GetMapping
+    public List<EntradaCliente> obterPorDatas(@RequestParam(required = false) String dataInicial, @RequestParam(required = false) String dataFinal, @RequestParam(required = false) SituacaoEnum situacaoEnum) {
+        return entradaClienteService.obterPorFiltros(dataInicial, dataFinal, situacaoEnum);
     }
 
     @PostMapping
-    public @ResponseBody EntradaCliente criaNovaEntrada(@RequestBody @Valid @NotNull CadastraEntradaClienteDTO criaEntradaClienteDTO) {
-        EntradaCliente entradaCliente = new EntradaCliente();
-        entradaCliente.setModelo(criaEntradaClienteDTO.getModelo());
-        entradaCliente.setPlaca(criaEntradaClienteDTO.getPlaca());
-        return entradaClienteService.novaEntrada(entradaCliente);
+    public @ResponseBody EntradaClienteDTO criaNovaEntrada(@RequestBody @Valid @NotNull CadastraEntradaClienteDTO criaEntradaClienteDTO) {
+        return entradaClienteService.novaEntrada(criaEntradaClienteDTO);
     }
 
     @PutMapping(path = "/{placa}/saida")
     public SaidaEntradaClienteDTO registraSaida(@PathVariable String placa) {
-        SaidaEntradaClienteDTO saidaEntradaClienteDTO = new SaidaEntradaClienteDTO();
-        saidaEntradaClienteDTO.setPlaca(placa);
-        saidaEntradaClienteDTO.setEntradaCliente(entradaClienteService.registraSaida(saidaEntradaClienteDTO.getPlaca()));
-        List<Parametro> parametros = parametroService.consultaParametro();
-        saidaEntradaClienteDTO.setValorHora(parametros.get(0).getValorHora());
-        return saidaEntradaClienteDTO;
+        return entradaClienteService.registraSaida(placa);
     }
 
     @PutMapping(path = "/{placa}")

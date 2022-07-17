@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/parametros")
@@ -22,13 +21,8 @@ public class ParametroController {
     }
 
     @GetMapping
-    public List<Parametro> consultaParametro() {
+    public Parametro consultaParametro() {
         return parametroService.consultaParametro();
-    }
-
-    @GetMapping(path = "/{codigo}")
-    public Parametro parametro(@PathVariable Long codigo){
-        return parametroService.encontraParametroPeloId(codigo);
     }
 
     @PutMapping(path = "/{codigo}")

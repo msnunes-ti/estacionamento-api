@@ -1,12 +1,14 @@
 package com.Estacionamento.exercicioEstacionamento.services;
 
 import com.Estacionamento.exercicioEstacionamento.dto.AlteraEntradaClienteDTO;
+import com.Estacionamento.exercicioEstacionamento.dto.CadastraEntradaClienteDTO;
+import com.Estacionamento.exercicioEstacionamento.dto.EntradaClienteDTO;
+import com.Estacionamento.exercicioEstacionamento.dto.SaidaEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
+import com.Estacionamento.exercicioEstacionamento.mapper.EntradaClienteMapper;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
-import com.Estacionamento.exercicioEstacionamento.model.Parametro;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
 import com.Estacionamento.exercicioEstacionamento.repository.ParametroRepository;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +34,17 @@ public class EntradaClienteService {
     @Autowired
     private ParametroRepository parametroRepository;
 
+    @Autowired
+    private ParametroService parametroService;
 
-    public EntradaCliente novaEntrada(@Valid EntradaCliente entradaCliente) {
+
+    public EntradaClienteDTO novaEntrada(CadastraEntradaClienteDTO cadastraEntradaClienteDTO) {
+        EntradaCliente entradaCliente = new EntradaCliente();
+        entradaCliente.setModelo(cadastraEntradaClienteDTO.getModelo());
+        entradaCliente.setPlaca(cadastraEntradaClienteDTO.getPlaca());
         entradaCliente.setEntrada(LocalDateTime.now());
         entradaRepository.save(entradaCliente);
-        return entradaCliente;
+        return EntradaClienteMapper.toEntradaClienteDTO(entradaCliente);
     }
 
     public List<EntradaCliente> obterTodos(SituacaoEnum situacao) {
@@ -44,6 +53,28 @@ public class EntradaClienteService {
             case ABERTO -> entradaRepository.findBySaidaIsNull();
             default -> entradaRepository.findAll();
         };
+    }
+
+    public List<EntradaCliente> obterTodosPorIntervadoDeDatas(SituacaoEnum situacao, LocalDate dataInicial, LocalDate dataFinal) {
+        LocalDateTime dataInicio = dataInicial.atStartOfDay();
+        LocalDateTime dataFim = dataFinal.atTime(LocalTime.MAX);
+        if (dataInicio.isAfter(dataFim)) {
+            throw new RuntimeException("A data final é menor que a data inicial");
+        }
+        return switch (Optional.ofNullable(situacao).orElse(TODOS)) {
+            case FECHADO -> entradaRepository.findBySaidaNotNull();
+            case ABERTO -> entradaRepository.findByEntradaIsBetweenAndSaidaIsNull(dataInicio, dataFim);
+            default -> entradaRepository.findAll();
+        };
+    }
+
+    public List<EntradaCliente> obterPorFiltros(String dataInicial, String dataFinal, SituacaoEnum situacaoEnum){
+        if (dataInicial == null || dataFinal == null) {
+            return obterTodos(situacaoEnum);
+        }
+        LocalDate dataInicio = LocalDate.parse(dataInicial);
+        LocalDate dataFim = LocalDate.parse(dataFinal);
+        return obterTodosPorIntervadoDeDatas(situacaoEnum, dataInicio, dataFim);
     }
 
     public Iterable<EntradaCliente> obterAbertos() {
@@ -72,16 +103,7 @@ public class EntradaClienteService {
         return entradaRepository.findByPlacaContainingIgnoreCase(placa);
     }
 
-    public List<EntradaCliente> obterPorDatas(@NotNull LocalDate dataInicial, @NotNull LocalDate dataFinal){
-        LocalDateTime inicial = dataInicial.atStartOfDay();
-        LocalDateTime saida = dataFinal.atTime(23,59,59,59);
-        if (inicial.isAfter(saida)) {
-            throw new RuntimeException("A data final é menor que a data inicial");
-        }
-        return entradaRepository.findByEntradaIsBetweenAndSaidaIsNull(inicial, saida);
-    }
-
-    public EntradaCliente registraSaida(String placa) {
+    public SaidaEntradaClienteDTO registraSaida(String placa) {
         List<EntradaCliente> entradaClientes = entradaRepository.findByPlacaIgnoreCaseAndSaidaIsNull(placa);
         if (entradaClientes.size() > 1) {
             throw new RuntimeException("Existe mais de um registro aberto para essa placa.");
@@ -92,13 +114,13 @@ public class EntradaClienteService {
         EntradaCliente entradaCliente = entradaClientes.get(0);
         entradaCliente.setSaida(LocalDateTime.now());
         int horas = (int) entradaCliente.getEntrada().until(entradaCliente.getSaida(), ChronoUnit.HOURS);
-        Optional<Parametro> parametro = parametroRepository.findById(1L);
-        if (parametro.isEmpty()) {
-            throw new RuntimeException("Paramentro não encontrado");
-        }
-        entradaCliente.setValor(parametro.get().getValorHora().multiply(BigDecimal.valueOf(horas + 1)));
+        BigDecimal valorHora = parametroService.consultaParametro().getValorHora();
+        entradaCliente.setValor(valorHora.multiply((BigDecimal.valueOf(horas + 1))));
         entradaRepository.save(entradaCliente);
-        return entradaCliente;
+        SaidaEntradaClienteDTO saidaEntradaClienteDTO = new SaidaEntradaClienteDTO();
+        saidaEntradaClienteDTO.setPlaca(placa);
+        saidaEntradaClienteDTO.setEntradaCliente(EntradaClienteMapper.toEntradaClienteDTO(entradaCliente));
+        return saidaEntradaClienteDTO;
     }
 
     public EntradaCliente alterarRegistro(@Valid AlteraEntradaClienteDTO alteraEntradaClienteDTO, String placa) {

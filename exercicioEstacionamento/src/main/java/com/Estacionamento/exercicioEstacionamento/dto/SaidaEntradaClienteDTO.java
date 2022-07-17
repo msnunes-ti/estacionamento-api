@@ -12,7 +12,7 @@ public class SaidaEntradaClienteDTO {
     @NotBlank
     private String placa;
 
-    private EntradaCliente entradaCliente;
+    private EntradaClienteDTO entradaClienteDTO;
 
     private BigDecimal valorHora;
 
@@ -24,12 +24,12 @@ public class SaidaEntradaClienteDTO {
         this.placa = placa;
     }
 
-    public EntradaCliente getEntradaCliente() {
-        return entradaCliente;
+    public EntradaClienteDTO getEntradaCliente() {
+        return entradaClienteDTO;
     }
 
-    public void setEntradaCliente(EntradaCliente entradaCliente) {
-        this.entradaCliente = entradaCliente;
+    public void setEntradaCliente(EntradaClienteDTO entradaCliente) {
+        this.entradaClienteDTO = entradaCliente;
     }
 
     public BigDecimal getValorHora() {

@@ -25,12 +25,9 @@ public class ParametroService {
         parametroRepository.save(parametro);
     }
 
-    public List<Parametro> consultaParametro() {
-        List<Parametro> parametros = parametroRepository.findAll();
-        if (parametros.size() == 0) {
-            throw new RuntimeException("Não foram encontrados parametros cadastrados.");
-        }
-        return parametros;
+    public Parametro consultaParametro() {
+        return parametroRepository.findFirst()
+                .orElseThrow((() -> new RuntimeException("Não foram encontrados parametros cadastrados.")));
     }
 
     public Parametro encontraParametroPeloId(Long codigo){
