@@ -26,9 +26,7 @@ public class ParametroService {
     }
 
     public Parametro consultaParametro() {
-        return encontraParametroPeloId(1L);
-//        return parametroRepository.findFirst()
-//                .orElseThrow((() -> new RuntimeException("Não foram encontrados parametros cadastrados.")));
+        return parametroRepository.findFirstByOrderById();
     }
 
     public Parametro encontraParametroPeloId(Long codigo){
