@@ -17,7 +17,6 @@ public class EntradaClienteDTO {
 
     private BigDecimal valor;
 
-
     public Long getId() {
         return id;
     }

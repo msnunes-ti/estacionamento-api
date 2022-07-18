@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +30,6 @@ public class EntradaClienteService {
 
     @Autowired
     private EntradaRepository entradaRepository;
-
-//    @Autowired
-//    private ParametroRepository parametroRepository;
 
     @Autowired
     private ParametroService parametroService;
@@ -49,7 +45,7 @@ public class EntradaClienteService {
             throw new RuntimeException("A hora de entrada não deve ser anterior ao horário de abertura: " + parametro.getHoraInicio() + ".");
         }
         if (entradaCliente.getEntrada().toLocalTime().isAfter(parametro.getHoraFim().toLocalTime())) {
-            throw new RuntimeException("A hora de saída não deve ser posterior ao horário de fechamento: " + parametro.getHoraFim() + ".");
+            throw new RuntimeException("A hora de entrada não deve ser posterior ao horário de fechamento: " + parametro.getHoraFim() + ".");
         }
         entradaRepository.save(entradaCliente);
         return EntradaClienteMapper.toEntradaClienteDTO(entradaCliente);
@@ -119,15 +115,25 @@ public class EntradaClienteService {
         if (entradaClientes.isEmpty()) {
             throw new RuntimeException("Veículo não encontrado.");
         }
+        Parametro parametro = parametroService.consultaParametro();
         EntradaCliente entradaCliente = entradaClientes.get(0);
         entradaCliente.setSaida(LocalDateTime.now());
-        int horas = (int) entradaCliente.getEntrada().until(entradaCliente.getSaida(), ChronoUnit.HOURS);
-        BigDecimal valorHora = parametroService.consultaParametro().getValorHora();
-        entradaCliente.setValor(valorHora.multiply((BigDecimal.valueOf(horas + 1))));
+        int horas = (int) (1 + entradaCliente.getEntrada().until(entradaCliente.getSaida(), ChronoUnit.HOURS));
+        if (entradaCliente.getEntrada().until(entradaCliente.getSaida(), ChronoUnit.MINUTES) <= parametro.getTolerancia()) {
+            horas = 0;
+        }
+        BigDecimal valorHora = parametro.getValorHora();
+        entradaCliente.setValor(valorHora.multiply((BigDecimal.valueOf(horas))));
+        if (entradaCliente.getSaida().toLocalTime().isBefore(parametro.getHoraInicio().toLocalTime())) {
+            throw new RuntimeException("A hora de saida não deve ser anterior ao horário de abertura: " + parametro.getHoraInicio() + ".");
+        }
+        if (entradaCliente.getSaida().toLocalTime().isAfter(parametro.getHoraFim().toLocalTime())) {
+            throw new RuntimeException("A hora de saída não deve ser posterior ao horário de fechamento: " + parametro.getHoraFim() + ".");
+        }
         entradaRepository.save(entradaCliente);
         SaidaEntradaClienteDTO saidaEntradaClienteDTO = new SaidaEntradaClienteDTO();
-        saidaEntradaClienteDTO.setPlaca(placa);
-        saidaEntradaClienteDTO.setEntradaCliente(EntradaClienteMapper.toEntradaClienteDTO(entradaCliente));
+        saidaEntradaClienteDTO.setEntradaCliente(entradaCliente);
+        saidaEntradaClienteDTO.setValorHora(parametro.getValorHora());
         return saidaEntradaClienteDTO;
     }
 
