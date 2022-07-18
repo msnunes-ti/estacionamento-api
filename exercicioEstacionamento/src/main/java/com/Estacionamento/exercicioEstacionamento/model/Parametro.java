@@ -1,7 +1,9 @@
 package com.Estacionamento.exercicioEstacionamento.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.sql.Time;
 
 @Entity
 public class Parametro {
@@ -13,8 +15,13 @@ public class Parametro {
     @Column(name = "valor_hora")
     private BigDecimal valorHora;
 
-    public Parametro() {
-    }
+    @NotNull
+    @Column(name = "hora_inicio")
+    private Time horaInicio;
+
+    @NotNull
+    @Column(name = "hora_fim")
+    private Time horaFim;
 
     public Long getId() {
         return id;
@@ -30,5 +37,21 @@ public class Parametro {
 
     public void setValorHora(BigDecimal valorHora) {
         this.valorHora = valorHora;
+    }
+
+    public Time getHoraInicio() {
+        return horaInicio;
+    }
+
+    public void setHoraInicio(Time horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+
+    public Time getHoraFim() {
+        return horaFim;
+    }
+
+    public void setHoraFim(Time horaFim) {
+        this.horaFim = horaFim;
     }
 }
