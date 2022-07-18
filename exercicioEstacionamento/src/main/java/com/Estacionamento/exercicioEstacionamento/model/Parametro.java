@@ -23,6 +23,9 @@ public class Parametro {
     @Column(name = "hora_fim")
     private Time horaFim;
 
+    @Column(name = "tolerancia")
+    private Integer tolerancia;
+
     public Long getId() {
         return id;
     }
@@ -53,5 +56,13 @@ public class Parametro {
 
     public void setHoraFim(Time horaFim) {
         this.horaFim = horaFim;
+    }
+
+    public int getTolerancia() {
+        return tolerancia;
+    }
+
+    public void setTolerancia(int tolerancia) {
+        this.tolerancia = tolerancia;
     }
 }

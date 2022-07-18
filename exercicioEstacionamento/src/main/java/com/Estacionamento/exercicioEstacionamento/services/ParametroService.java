@@ -16,11 +16,14 @@ public class ParametroService {
 
     public void criaParametro(CadastraParametroDTO cadastraParametroDTO) {
         long qtde = parametroRepository.count();
-        Parametro parametro = new Parametro();
-        parametro.setValorHora(cadastraParametroDTO.getValorHora());
         if (qtde != 0) {
             throw new RuntimeException("O parametro já foi cadastrado.");
         }
+        Parametro parametro = new Parametro();
+        parametro.setValorHora(cadastraParametroDTO.getValorHora());
+        parametro.setHoraInicio(cadastraParametroDTO.getHoraInicio());
+        parametro.setHoraFim(cadastraParametroDTO.getHoraFim());
+        parametro.setTolerancia(cadastraParametroDTO.getTolerancia());
         parametroRepository.save(parametro);
     }
 
@@ -42,6 +45,9 @@ public class ParametroService {
             throw new RuntimeException("Nenhum parametro encontrado.");
         }
         parametro.get().setValorHora(cadastraParametroDTO.getValorHora());
+        parametro.get().setHoraInicio((cadastraParametroDTO.getHoraInicio()));
+        parametro.get().setHoraFim(cadastraParametroDTO.getHoraFim());
+        parametro.get().setTolerancia(cadastraParametroDTO.getTolerancia());
         parametroRepository.save(parametro.get());
     }
 

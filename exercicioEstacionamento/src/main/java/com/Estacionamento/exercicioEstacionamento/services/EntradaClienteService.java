@@ -7,8 +7,8 @@ import com.Estacionamento.exercicioEstacionamento.dto.SaidaEntradaClienteDTO;
 import com.Estacionamento.exercicioEstacionamento.enums.SituacaoEnum;
 import com.Estacionamento.exercicioEstacionamento.mapper.EntradaClienteMapper;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
+import com.Estacionamento.exercicioEstacionamento.model.Parametro;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
-import com.Estacionamento.exercicioEstacionamento.repository.ParametroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,10 @@ public class EntradaClienteService {
         entradaCliente.setModelo(cadastraEntradaClienteDTO.getModelo());
         entradaCliente.setPlaca(cadastraEntradaClienteDTO.getPlaca());
         entradaCliente.setEntrada(LocalDateTime.now());
+        Parametro parametro = parametroService.consultaParametro();
+        if (entradaCliente.getEntrada().isBefore(ChronoLocalDateTime.from(parametro.getHoraInicio().toLocalTime())) || entradaCliente.getSaida().isAfter(ChronoLocalDateTime.from(parametro.getHoraFim().toLocalTime()))) {
+            throw new RuntimeException("A hora de entrada deve estar entre " + parametro.getHoraInicio() + " e " + parametro.getHoraFim() + ".");
+        }
         entradaRepository.save(entradaCliente);
         return EntradaClienteMapper.toEntradaClienteDTO(entradaCliente);
     }
