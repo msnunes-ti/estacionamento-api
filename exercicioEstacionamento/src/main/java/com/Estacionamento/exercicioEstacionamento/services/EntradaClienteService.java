@@ -45,8 +45,11 @@ public class EntradaClienteService {
         entradaCliente.setPlaca(cadastraEntradaClienteDTO.getPlaca());
         entradaCliente.setEntrada(LocalDateTime.now());
         Parametro parametro = parametroService.consultaParametro();
-        if (entradaCliente.getEntrada().isBefore(ChronoLocalDateTime.from(parametro.getHoraInicio().toLocalTime())) || entradaCliente.getSaida().isAfter(ChronoLocalDateTime.from(parametro.getHoraFim().toLocalTime()))) {
-            throw new RuntimeException("A hora de entrada deve estar entre " + parametro.getHoraInicio() + " e " + parametro.getHoraFim() + ".");
+        if (entradaCliente.getEntrada().toLocalTime().isBefore(parametro.getHoraInicio().toLocalTime())) {
+            throw new RuntimeException("A hora de entrada não deve ser anterior ao horário de abertura: " + parametro.getHoraInicio() + ".");
+        }
+        if (entradaCliente.getEntrada().toLocalTime().isAfter(parametro.getHoraFim().toLocalTime())) {
+            throw new RuntimeException("A hora de saída não deve ser posterior ao horário de fechamento: " + parametro.getHoraFim() + ".");
         }
         entradaRepository.save(entradaCliente);
         return EntradaClienteMapper.toEntradaClienteDTO(entradaCliente);
