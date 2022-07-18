@@ -9,6 +9,7 @@ import com.Estacionamento.exercicioEstacionamento.mapper.EntradaClienteMapper;
 import com.Estacionamento.exercicioEstacionamento.model.EntradaCliente;
 import com.Estacionamento.exercicioEstacionamento.model.Parametro;
 import com.Estacionamento.exercicioEstacionamento.repository.EntradaRepository;
+import com.Estacionamento.exercicioEstacionamento.repository.ParametroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,9 @@ public class EntradaClienteService {
 
     @Autowired
     private ParametroService parametroService;
+
+    @Autowired
+    private ParametroRepository parametroRepository;
 
 
     public EntradaClienteDTO novaEntrada(CadastraEntradaClienteDTO cadastraEntradaClienteDTO) {
