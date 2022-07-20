@@ -58,11 +58,11 @@ public class Parametro {
         this.horaFim = horaFim;
     }
 
-    public int getTolerancia() {
+    public Integer getTolerancia() {
         return tolerancia;
     }
 
-    public void setTolerancia(int tolerancia) {
+    public void setTolerancia(Integer tolerancia) {
         this.tolerancia = tolerancia;
     }
 }

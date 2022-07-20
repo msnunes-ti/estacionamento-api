@@ -120,16 +120,13 @@ public class EntradaClienteService {
             throw new RuntimeException("Veículo não encontrado.");
         }
         Parametro parametro = parametroService.consultaParametro();
-//        int tolerancia = parametro.getTolerancia();
+        int tolerancia = Optional.ofNullable(parametro.getTolerancia()).orElse(0);
         EntradaCliente entradaCliente = entradaClientes.get(0);
         entradaCliente.setSaida(LocalDateTime.now());
         int horas = (int) (1 + entradaCliente.getEntrada().until(entradaCliente.getSaida(), ChronoUnit.HOURS));
-        if (entradaCliente.getEntrada().until(entradaCliente.getSaida(), ChronoUnit.MINUTES) <= parametro.getTolerancia()) {
+        if (entradaCliente.getEntrada().until(entradaCliente.getSaida(), ChronoUnit.MINUTES) <= tolerancia) {
             horas = 0;
         }
-//        if (Optional.ofNullable(tolerancia).orElse(0)) {
-//
-//        }
         BigDecimal valorHora = parametro.getValorHora();
         entradaCliente.setValor(valorHora.multiply((BigDecimal.valueOf(horas))));
         if (entradaCliente.getSaida().toLocalTime().isBefore(parametro.getHoraInicio().toLocalTime())) {
